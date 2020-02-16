@@ -1,18 +1,20 @@
+//visual variable
+int fps = 30;
 //movement variables
-float   movement_speed = 3.0;
+int movement_speed = 4;
 PVector movement_direction = new PVector(movement_speed, 0);
 
 //skeleton point coordinates
-PVector snout  = new PVector(200, 200);
-PVector head   = new PVector(200, 200);
-PVector spine1 = new PVector(250, 200);
-PVector spine2 = new PVector(300, 200);
-PVector spine3 = new PVector(350, 200);
-PVector spine4 = new PVector(400, 200);
-PVector tail1  = new PVector(250, 200);
-PVector tail2  = new PVector(300, 200);
-PVector tail3  = new PVector(350, 200);
-PVector tail4  = new PVector(400, 200);
+PVector snout  = new PVector(400, 400);
+PVector head   = new PVector(400, 400);
+PVector spine1 = new PVector(500, 400);
+PVector spine2 = new PVector(600, 400);
+PVector spine3 = new PVector(700, 400);
+PVector spine4 = new PVector(800, 400);
+PVector tail1  = new PVector(500, 400);
+PVector tail2  = new PVector(600, 400);
+PVector tail3  = new PVector(700, 400);
+PVector tail4  = new PVector(800, 400);
 
 //main body shadow offset
 PVector shadow_offset = new PVector(-5, 5);
@@ -39,11 +41,10 @@ color eyecolor      = #000000;
 color tongue_color  = #ff5555;
 color liz_body      = #B6DB19;
 color liz_legs      = #93AF15;
-color grass         = #59c135;
-color grass_shadow  = #14a02e;
+color grass         = #488E96;
+color grass_shadow  = #326369;
 color liz_shadow = color(0, 0, 100, 100);
 float hue = 0.2;
-
 
 //leg lockers
 boolean leg_fr_down = false;
@@ -73,8 +74,7 @@ PVector leg_bl_target = new PVector(200, 200);
 
 
 void setup() {
-  size(400,400);
-  frameRate(60);
+  size(800,800);
   smooth(0);
   hue = random(0,1);//obligatory random
   change_color();//to replace default body and leg colors
@@ -82,6 +82,7 @@ void setup() {
 
 
 void draw() {
+  frameRate(fps);
   draw_background();//green and text
   move_head(); //move according to player input
   push_head(); //avoid walls
@@ -90,7 +91,7 @@ void draw() {
   leg_shadow(grass_shadow, -3, 3); //leg shadows
   draw_body_shadow(grass_shadow);  //mainbody shadows
   draw_legs(liz_legs);//draws legs
-  draw_body(liz_body);//draws mainbody
+  draw_body(liz_body*2);//draws mainbody
 }
 
 
@@ -146,32 +147,49 @@ void move_spine() {
   tail4  = anchor(tail4,  tail3,  15);
 }
 
+void mousePressed(){
+  tongue = true;
+}
+
+void mouseReleased() {
+  tongue = false;
+}
 
 //input handlers
 //multiple verisons used in case player has capslock or doesnt read instructions
 void keyPressed() {
-  if (key == 'a' || key == 'A' ) {
+
+  if (keyCode == LEFT) {
     left = true;
   }
 
-  if (key == 'd' || key == 'D' ) {
+  else if (keyCode == RIGHT) {
     right = true;
   }
 
-  if (key == ' ' || key == 'w' || key == 'W' ) {
-    tongue = true;
+  else if (keyCode == UP) {
+    fps = fps+1;
+    print(fps);
   }
 
-  if (key == 's' || key == 'S' ) {
+  else if (keyCode == DOWN){
+    fps = fps-1;
+    if (fps <= 0){
+      fps = 1;
+    }
+    print(fps);
+  }
+
+  else if (key == 's' || key == 'S' ) {
     changecolor = true;
   }
 }
 
 void keyReleased() {
-  if (key == 'a' || key == 'A' ) {
+  if (keyCode == LEFT) {
     left = false;
   }
-  if (key == 'd' || key == 'D' ) {
+  if (keyCode == RIGHT) {
     right = false;
   }
   if (key == ' ' || key == 'w' || key == 'W' ) {
@@ -247,7 +265,6 @@ void link(PVector point1, float rad1, PVector point2, float rad2, color col) {
   endShape(CLOSE);
 }
 
-//something-somethin zelda reference
 void shadow_link(PVector p1, float rad1, PVector p2, float rad2, color col) {
   noStroke();
   PVector point1 = new PVector(shadow_offset.x + p1.x, shadow_offset.y + p1.y);//offsets the position where shadow
@@ -264,7 +281,7 @@ void shadow_link(PVector p1, float rad1, PVector p2, float rad2, color col) {
   vertex(point2.x + dir.x*rad2, point2.y + dir.y*rad2);
   vertex(point2.x - dir.x*rad2, point2.y - dir.y*rad2);
   vertex(point1.x - dir.x*rad1, point1.y - dir.y*rad1);
-  endShape(CLOSE);
+  endShape(CLOSE*2);
 }
 
 
@@ -461,32 +478,10 @@ void move_legs() {
 }
 
 
-//background and texts
+//background
 void draw_background() {
-  randomSeed(42);
+  randomSeed(255);
   background(grass);
-  fill(grass_shadow);
-  textSize(30);
-  text("[A][D] steer ", 5, 35);
-  text("[W] tongue", 5, 70);
-  text("[S] colour", 5, 105);
-  
-  //draws grid
-  for (int x = 0; x < width +5; x += 20){
-    for(int y = 0; y < height +5; y += 20){
-      strokeWeight(3);
-      stroke(grass_shadow);
-      point(x,y);
-    }
-  }
-
-  //once upon a time here was a cool grass thing that spawned it in patches
-  //it even waved with time at different speeds
-  //it looked like a lot of hungry worms laying on their side
-  //rip worm-grass
-  
-  //now its just a grid
-  //grid still looks better than that ugly-ass bezier curve looking thing
 }
 
 
